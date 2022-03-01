@@ -1,0 +1,32 @@
+.nice-select{
+  display: none !important;
+}
+.select2-container{
+  max-width: 589px;
+  width: 100% !important;
+}
+.select2-selection__choice__display{
+  background: #06a3da;
+    color: #fff;
+    padding: 10px;
+    
+}
+.select2-container--default .select2-selection--multiple{
+  height: 58px;
+  
+}
+.select2-container--default.select2-container--focus .select2-selection--multiple{
+  height: 58px;
+  border: 1px solid #e2e0e0;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice{
+  height: 40px;
+  margin-top: 8px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove{
+  height: 40px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display{
+  line-height: 40px;
+  padding: 10px 10px;
+}
