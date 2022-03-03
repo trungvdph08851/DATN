@@ -26,57 +26,13 @@ class BookingController extends Controller
         return view('frontend.verify');
     }
     public function saveBooking(bookingRequest $request){
-        $phone = ltrim( "$request->phone_number", 0);
-        $phonesend = '+84'.$phone;
-        $token = getenv("TWILIO_AUTH_TOKEN");
-        $twilio_sid = getenv("TWILIO_SID");
-        $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-        $twilio = new Client($twilio_sid, $token);
-//        $message = $twilio->messages
-//            ->create("+84971052857", // to
-//                array(
-//                    "messagingServiceSid" => "MG1056032c4bdc2b25230c9e9baf456db4",
-//                    "body" => "quang tesst"
-//                )
-//            );
-//
-//        print($message); die;
-        $sendOtp = $twilio->verify->v2->services($twilio_verify_sid)
-            ->verifications
-            ->create($phonesend, "sms");
-        $request->session()->put('phone_number',$phonesend);
-        $request->session()->put("dataBooking", $request->all());
-        $redirect = "verify";
-        $data = ['code'=> 1,'success'=>'chúng tôi đã gửi 1 mã xác nhận tới số điện thoại đăng ký!','redirect'=>$redirect,'request' =>$request->all()];
-        if($sendOtp){
-            return response()->json(['data'=>$data]);
-        }
-//        return redirect()->route('verify')->with(['phone_number' => $phonesend]);
-    }
-    protected function verify(Request $request)
-    {
-        $value = $request->session()->get("dataBooking");
-        $data = $request->validate([
-            'verification_code' => ['required', 'numeric'],
-            'phone_number' => ['required', 'string'],
-        ]);
-        /* Get credentials from .env */
-        $token = getenv("TWILIO_AUTH_TOKEN");
-        $twilio_sid = getenv("TWILIO_SID");
-        $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-        $twilio = new Client($twilio_sid, $token);
-        $verification = $twilio->verify->v2->services($twilio_verify_sid)
-            ->verificationChecks
-            ->create($data['verification_code'], array('to' => $data['phone_number']));
-        if ($verification->valid) {
             $booking = new booking();
-            $book = $booking->fill($request->session()->get("dataBooking"));
-//            $book->load('services');
+            $booking->fill($request->all());
             $booking->save();
 
-            if($value['services_id']){
+            if ($request->has('services_id')) {
                 $price = [];
-                foreach ($value['services_id'] as $key => $item) {
+                foreach ($request->services_id as $key => $item) {
                     $services = Services::where('id', '=', $item)->first();
                     $price[] = $services->price;
                     $booking_services = new booking_services();
@@ -90,26 +46,105 @@ class BookingController extends Controller
                 $sum = array_sum($price);
                 $bookingSum->price = $sum;
                 $bookingSum->save();
-                $nhan_vien = User::where('role',0)->get('email');
+                $nhan_vien = User::where('role', 0)->get('email');
                 $bk = booking_services::where('booking_id', $booking->id)->get('services_id');
                 $bksv = $bk->load('services');
                 $dataMail = [
                     'nam' => $booking->name,
                     'phone' => $booking->phone_number,
                     'service' => $bksv,
-                    'link' => route('booking.edit',['id'=>$booking->id])
+                    'link' => route('booking.edit', ['id' => $booking->id])
                 ];
-                foreach ($nhan_vien as $nv){
+                foreach ($nhan_vien as $nv) {
                     Mail::to($nv->email)->send(new Send_mail_booking($dataMail));
                 }
-            }
-
-
             return redirect()->route('booking')->with('success','Đặt lịch khám thành công');
-        }
-        return back()->with(['phone_number' => $data['phone_number'], 'error' => 'Mã xác nhận không dúng. Vui lòng kiểm tra lại!']);
 
+            }
+        // $phone = ltrim( "$request->phone_number", 0);
+        // $phonesend = '+84'.$phone;
+        // $token = getenv("TWILIO_AUTH_TOKEN");
+        // $twilio_sid = getenv("TWILIO_SID");
+        // $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
+        // $twilio = new Client($twilio_sid, $token);
+//        $message = $twilio->messages
+//            ->create("+84971052857", // to
+//                array(
+//                    "messagingServiceSid" => "MG1056032c4bdc2b25230c9e9baf456db4",
+//                    "body" => "quang tesst"
+//                )
+//            );
+//
+//        print($message); die;
+        // $sendOtp = $twilio->verify->v2->services($twilio_verify_sid)
+        //     ->verifications
+        //     ->create($phonesend, "sms");
+        // $request->session()->put('phone_number',$phonesend);
+        // $request->session()->put("dataBooking", $request->all());
+        // $redirect = "verify";
+        // $data = ['code'=> 1,'success'=>'chúng tôi đã gửi 1 mã xác nhận tới số điện thoại đăng ký!','redirect'=>$redirect,'request' =>$request->all()];
+        // if($sendOtp){
+        //     return response()->json(['data'=>$data]);
+        // }
+//        return redirect()->route('verify')->with(['phone_number' => $phonesend]);
     }
+//     protected function verify(Request $request)
+//     {
+//         $value = $request->session()->get("dataBooking");
+//         $data = $request->validate([
+//             'verification_code' => ['required', 'numeric'],
+//             'phone_number' => ['required', 'string'],
+//         ]);
+//         /* Get credentials from .env */
+//         $token = getenv("TWILIO_AUTH_TOKEN");
+//         $twilio_sid = getenv("TWILIO_SID");
+//         $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
+//         $twilio = new Client($twilio_sid, $token);
+//         $verification = $twilio->verify->v2->services($twilio_verify_sid)
+//             ->verificationChecks
+//             ->create($data['verification_code'], array('to' => $data['phone_number']));
+//         if ($verification->valid) {
+//             $booking = new booking();
+//             $book = $booking->fill($request->session()->get("dataBooking"));
+// //            $book->load('services');
+//             $booking->save();
+
+//             if($value['services_id']){
+//                 $price = [];
+//                 foreach ($value['services_id'] as $key => $item) {
+//                     $services = Services::where('id', '=', $item)->first();
+//                     $price[] = $services->price;
+//                     $booking_services = new booking_services();
+//                     $booking_services->services_id = $item;
+//                     $booking_services->booking_id = $booking->id;
+//                     $booking_services->status = BOOKING_PENDING;
+//                     $booking_services->save();
+//                 }
+
+//                 $bookingSum = booking::find($booking->id);
+//                 $sum = array_sum($price);
+//                 $bookingSum->price = $sum;
+//                 $bookingSum->save();
+//                 $nhan_vien = User::where('role',0)->get('email');
+//                 $bk = booking_services::where('booking_id', $booking->id)->get('services_id');
+//                 $bksv = $bk->load('services');
+//                 $dataMail = [
+//                     'nam' => $booking->name,
+//                     'phone' => $booking->phone_number,
+//                     'service' => $bksv,
+//                     'link' => route('booking.edit',['id'=>$booking->id])
+//                 ];
+//                 foreach ($nhan_vien as $nv){
+//                     Mail::to($nv->email)->send(new Send_mail_booking($dataMail));
+//                 }
+//             }
+
+
+//             return redirect()->route('booking')->with('success','Đặt lịch khám thành công');
+//         }
+//         return back()->with(['phone_number' => $data['phone_number'], 'error' => 'Mã xác nhận không dúng. Vui lòng kiểm tra lại!']);
+
+//     }
     public function testmail(){
         $msg = 'Đơn đặt khám mới';
         $emailNv = 'botboyy@gmail.com';

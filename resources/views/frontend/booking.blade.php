@@ -59,7 +59,7 @@
         <div class="container">
             <div class="appointment-form">
                 <h4><i class="flaticon-calendar"></i>Đặt lịch khám</h4>
-                <form action="" id="form_booking" method="post" enctype="multipart/form-data">
+                <form action="{{route('booking')}}"  method="post" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" value="0" name="status">
                     <div class="row">
@@ -99,9 +99,6 @@
                     </div>
 
                     <button class="default-btn">
-                        <div id='loader' style='display: none; float: left'>
-                        <img src="http://127.0.0.1:8000/img/loading.gif" alt="" width="20px">
-                        </div>
                         Đặt lịch khám
                     </button>
 

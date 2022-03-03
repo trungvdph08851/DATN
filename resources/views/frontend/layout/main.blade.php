@@ -47,11 +47,11 @@
       }(document, 'script', 'facebook-jssdk'));
     </script>
 
-    {{-- <div class="preloader">
+    <div class="preloader">
         <div class="loader">
             <div class="sbl-half-circle-spin"></div>
         </div>
-    </div> --}}
+    </div>
     @include('frontend.layout.header')
 
     @yield('content')

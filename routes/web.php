@@ -61,7 +61,7 @@ Route::get('detail-doctor/{id}', [HomeController::class, 'detailDoctor'])->name(
 
 
 Route::get('{slug}', [HomeController::class, 'singlepage'])->name('singlepage');
-//Route::get('test-mail',[BookingController::class, 'testmail']);
+Route::get('test-mail',[BookingController::class, 'testmail']);
 
 
 Route::get('{slug}', [HomeController::class, 'singlepage'])->name('singlepage');

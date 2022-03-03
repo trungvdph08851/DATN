@@ -26,7 +26,10 @@
         .alert-dismissible .close{
             right: -15px !important;
         }
-        
+        .datepicker table tr td.disabled, .datepicker table tr td.disabled:hover{
+            opacity: 0.5;
+            background: rgb(187, 187, 187);
+        }
 
     </style>
 @endsection
@@ -237,10 +240,12 @@
             let date = '#' + el_rowId + '_date';
             let time_start = '#' + el_rowId + '_time_start';
             let time_end = '#' + el_rowId + '_time_end';
+            let today = moment().format('YYYY-MM-DD');
             $(date).datepicker({
                 todayHighlight:!0,
                 autoclose:!0,
-                format:"yyyy-mm-dd"
+                format:"yyyy-mm-dd",
+                startDate: today
             });
             $(time_start).timepicker({
                 autoclose:!0
